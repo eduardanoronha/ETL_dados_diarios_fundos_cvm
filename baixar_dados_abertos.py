@@ -1,10 +1,14 @@
 import os
 import time
-#import pyodbc
+import pyodbc
 import zipfile
 import datetime
 import pandas as pd
 import urllib.request
+import platform
+print(platform.architecture())
+
+inicio = time.time()
 
 # Antes de iniciar o código é preciso criar algumas variáveis de data:
 
@@ -15,14 +19,19 @@ data_mes = data_atual.strftime("%Y%m")
 print('Programa iniciado...')
 
 # Estabelecer a conexão com o banco de dados do SQL
-#conexao_string = r'Driver={SQL Server};Server=srvlocalbd;Database=produtos555;UID=quantum;PWD=quantum'
-#conexao = pyodbc.connect(conexao_string)
-#cursor = conexao.cursor()
+print(pyodbc.drivers())
+conn = pyodbc.connect(
+    "DRIVER={PostgreSQL ODBC Driver(UNICODE)};"
+    "SERVER=localhost;"
+    "PORT=5432;"
+    "DATABASE=projeto1;"
+    "UID=eduardan;"
+    "PWD=coutinho;"
+)
+cursor = conn.cursor()
+print(cursor)
 
-## Primeira parte: Rodar consultas do de para. Se tiver resultados, o restante do código não será rodado. ##
-
-
-## Segunda parte: Baixar os arquivos da CVM ##
+## Baixar os arquivos da CVM ##
 
 # URL do arquivo zip
 url = f"https://dados.cvm.gov.br/dados/FI/DOC/INF_DIARIO/DADOS/inf_diario_fi_{data_mes}.zip"
@@ -44,3 +53,9 @@ with zipfile.ZipFile(zip_name, "r") as zip_ref:
     zip_ref.extract(csv, diretorio)
 os.remove(zip_name)
 print("Arquivos CSV extraídos do ZIP com sucesso!")
+
+
+final = time.time()
+tempo_execucao = final-inicio
+print("Programa finalizado!")
+print(f"Tempo de execução: {tempo_execucao} segundos.")
