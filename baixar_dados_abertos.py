@@ -5,8 +5,6 @@ import zipfile
 import datetime
 import pandas as pd
 import urllib.request
-import platform
-print(platform.architecture())
 
 inicio = time.time()
 
@@ -28,7 +26,7 @@ conn = pyodbc.connect(
     "PWD=coutinho;"
 )
 cursor = conn.cursor()
-print(cursor)
+print("Conexão com o SQL realizada com sucesso.")
 
 ## Baixar os arquivos da CVM ##
 
@@ -70,7 +68,7 @@ df_fundo.columns = [
     ,"RESG_DIA"
     ,"NR_COTST"
 ]
-
+print("Total de linhas do CSV: ", len(df_fundo))
 print('Arquivo acessado: ', caminho_csv)
 print(f"Os dados do arquvo registro_fundo.csv serão inseridos na tabela dados_abertos_cvm.informe_diario_fundos...")
 
@@ -104,6 +102,7 @@ for index, row in df_fundo.iterrows():
     ,'{RESG_DIA}'
     ,{NR_COTST}
     )
+    ON CONFLICT (CNPJ_FUNDO_CLASSE, ID_SUBCLASSE, DT_COMPTC) DO NOTHING
     """
     try:
         #print(query_insert)
@@ -111,7 +110,7 @@ for index, row in df_fundo.iterrows():
         conn.commit()
         count_linhas_insert +=1
 
-        print("Dados inseridos na tabela dados_abertos_cvm.informe_diario_fundos com sucesso!")
+        #print("Dados inseridos na tabela dados_abertos_cvm.informe_diario_fundos com sucesso!")
 
     except Exception as e:
         print(e)
