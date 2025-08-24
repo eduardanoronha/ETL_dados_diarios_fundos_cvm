@@ -108,7 +108,7 @@ for index, row in df_fundo.iterrows():
         #print(query_insert)
         cursor.execute(query_insert)
         conn.commit()
-        count_linhas_insert +=1
+        count_linhas_insert += cursor.rowcount
 
         #print("Dados inseridos na tabela dados_abertos_cvm.informe_diario_fundos com sucesso!")
 
@@ -119,5 +119,7 @@ for index, row in df_fundo.iterrows():
 print(f"Total de linhas inseridas: {count_linhas_insert}")
 final = time.time()
 tempo_execucao = final-inicio
+tempo_minutoss = tempo_execucao/60
 print("Programa finalizado!")
 print(f"Tempo de execução: {tempo_execucao} segundos.")
+print(f"Tempo de execução: {tempo_minutoss} minutos.")
