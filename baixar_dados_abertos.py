@@ -44,13 +44,13 @@ csv = fr"inf_diario_fi_{data_mes}.csv"
 caminho_csv = os.path.join(diretorio, csv)
 
 # Baixar o arquivo zip
-#urllib.request.urlretrieve(url, zip_name)
-#print("Arquivo ZIP baixado com sucesso!")
-## Extrair os arquivos CSV do zip
-#with zipfile.ZipFile(zip_name, "r") as zip_ref:
-#    zip_ref.extract(csv, diretorio)
-#os.remove(zip_name)
-#print("Arquivos CSV extraído do ZIP com sucesso!")
+urllib.request.urlretrieve(url, zip_name)
+print("Arquivo ZIP baixado com sucesso!")
+# Extrair os arquivos CSV do zip
+with zipfile.ZipFile(zip_name, "r") as zip_ref:
+    zip_ref.extract(csv, diretorio)
+os.remove(zip_name)
+print("Arquivos CSV extraído do ZIP com sucesso!")
 
 
 #Transforma o CSV em um dataframe pandas
@@ -86,6 +86,7 @@ for index, row in df_fundo.iterrows():
     CAPTC_DIA = pd.to_numeric(row["CAPTC_DIA"], errors="coerce")
     RESG_DIA = pd.to_numeric(row["RESG_DIA"], errors="coerce")
     NR_COTST = pd.to_numeric(row["NR_COTST"], errors="coerce")
+    FLAG_SUBCLASSE = 0 if ID_SUBCLASSE == 'Não se aplica' else 1 #flag = a 1: fundo é uma subclasse
 
     #Insere os dados na tabela
     query_insert = f"""
@@ -101,6 +102,7 @@ for index, row in df_fundo.iterrows():
     ,'{CAPTC_DIA}'
     ,'{RESG_DIA}'
     ,{NR_COTST}
+    ,{FLAG_SUBCLASSE}
     )
     ON CONFLICT (CNPJ_FUNDO_CLASSE, ID_SUBCLASSE, DT_COMPTC) DO NOTHING
     """
