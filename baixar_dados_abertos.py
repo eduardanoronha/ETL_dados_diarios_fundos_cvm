@@ -10,7 +10,7 @@ inicio = time.time()
 
 # Antes de iniciar o código é preciso criar algumas variáveis de data:
 
-# Data atual e mês anterior
+# Data atual (mês)
 data_atual = datetime.date.today()
 data_mes = data_atual.strftime("%Y%m")
 
