@@ -15,6 +15,8 @@ data_atual = datetime.date.today()
 data_mes = data_atual.strftime("%Y%m")
 
 print('Programa iniciado...')
+print("")
+print(f"Data do documento que será baixado: {data_mes}")
 
 # Estabelecer a conexão com o banco de dados do SQL
 conn = pyodbc.connect(
@@ -86,7 +88,6 @@ for index, row in df_fundo.iterrows():
     CAPTC_DIA = pd.to_numeric(row["CAPTC_DIA"], errors="coerce")
     RESG_DIA = pd.to_numeric(row["RESG_DIA"], errors="coerce")
     NR_COTST = pd.to_numeric(row["NR_COTST"], errors="coerce")
-    FLAG_SUBCLASSE = 0 if ID_SUBCLASSE == 'Não se aplica' else 1 #flag = a 1: fundo é uma subclasse
 
     #Insere os dados na tabela
     query_insert = f"""
@@ -102,18 +103,14 @@ for index, row in df_fundo.iterrows():
     ,'{CAPTC_DIA}'
     ,'{RESG_DIA}'
     ,{NR_COTST}
-    ,{FLAG_SUBCLASSE}
+    ,case when '{ID_SUBCLASSE}' = '' THEN 0 else 1 END 
     )
     ON CONFLICT (CNPJ_FUNDO_CLASSE, ID_SUBCLASSE, DT_COMPTC) DO NOTHING
     """
     try:
-        #print(query_insert)
         cursor.execute(query_insert)
         conn.commit()
         count_linhas_insert += cursor.rowcount
-
-        #print("Dados inseridos na tabela dados_abertos_cvm.informe_diario_fundos com sucesso!")
-
     except Exception as e:
         print(e)
 
