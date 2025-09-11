@@ -105,7 +105,25 @@ for index, row in df_fundo.iterrows():
     ,{NR_COTST}
     ,case when '{ID_SUBCLASSE}' = '' THEN 0 else 1 END 
     )
-    ON CONFLICT (CNPJ_FUNDO_CLASSE, ID_SUBCLASSE, DT_COMPTC) DO NOTHING
+    ON CONFLICT (CNPJ_FUNDO_CLASSE, ID_SUBCLASSE, DT_COMPTC) 
+    DO UPDATE SET
+        TP_FUNDO_CLASSE = EXCLUDED.TP_FUNDO_CLASSE,
+        VL_TOTAL        = EXCLUDED.VL_TOTAL,
+        VL_QUOTA        = EXCLUDED.VL_QUOTA,
+        VL_PATRIM_LIQ   = EXCLUDED.VL_PATRIM_LIQ,
+        CAPTC_DIA       = EXCLUDED.CAPTC_DIA,
+        RESG_DIA        = EXCLUDED.RESG_DIA,
+        NR_COTST        = EXCLUDED.NR_COTST,
+        FLAG_SUBCLASSE  = EXCLUDED.FLAG_SUBCLASSE
+    WHERE 
+        dados_abertos_cvm.informe_diario_fundos.TP_FUNDO_CLASSE IS DISTINCT FROM EXCLUDED.TP_FUNDO_CLASSE OR
+        dados_abertos_cvm.informe_diario_fundos.VL_TOTAL        IS DISTINCT FROM EXCLUDED.VL_TOTAL OR
+        dados_abertos_cvm.informe_diario_fundos.VL_QUOTA        IS DISTINCT FROM EXCLUDED.VL_QUOTA OR
+        dados_abertos_cvm.informe_diario_fundos.VL_PATRIM_LIQ   IS DISTINCT FROM EXCLUDED.VL_PATRIM_LIQ OR
+        dados_abertos_cvm.informe_diario_fundos.CAPTC_DIA       IS DISTINCT FROM EXCLUDED.CAPTC_DIA OR
+        dados_abertos_cvm.informe_diario_fundos.RESG_DIA        IS DISTINCT FROM EXCLUDED.RESG_DIA OR
+        dados_abertos_cvm.informe_diario_fundos.NR_COTST        IS DISTINCT FROM EXCLUDED.NR_COTST OR
+        dados_abertos_cvm.informe_diario_fundos.FLAG_SUBCLASSE  IS DISTINCT FROM EXCLUDED.FLAG_SUBCLASSE;
     """
     try:
         cursor.execute(query_insert)
