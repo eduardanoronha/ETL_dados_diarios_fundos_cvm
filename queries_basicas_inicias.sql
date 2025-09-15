@@ -45,7 +45,7 @@ WHERE mes = '2025-08-01'
 GROUP BY mes, id_fundo
 ORDER BY captacao_liquida_mensal DESC
 LIMIT 10
-
+;
 
 -- Top 10 fundos por Patrimônio líquido em uma data específica
 WITH aux AS(
