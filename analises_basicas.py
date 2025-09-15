@@ -25,7 +25,7 @@ query = """
 SELECT * FROM dados_abertos_cvm.informe_diario_fundos
 """
 df = pd.read_sql(query, conn)
-print(df.head(10))
+#print(df.head(10))
 
 ########################################
 # 1. Captação líquida mensal por fundo #
@@ -47,7 +47,7 @@ def captacao_liquida_mensal(df, id_fundo):
     plt.plot(result['mes'], result['captacao_liquida_mensal'], marker='o')
     plt.title(f"Captação líquida mensal: {id_fundo}")
     plt.xlabel("Mês")
-    plt.ylabel("Captação líquida")
+    plt.ylabel("Captação líquida em milhões")
     plt.grid(True)
     # formatação do eixo X para MM/YYYY
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%Y'))
@@ -56,7 +56,7 @@ def captacao_liquida_mensal(df, id_fundo):
 
     return result
 
-#captacao_liquida_mensal(df, "11.233.045/0001-22")
+#captacao_liquida_mensal(df, "44.703.508/0001-21")
 
 #####################################
 # 2. Top 10 Captação líquida no mês #
@@ -88,4 +88,67 @@ def top10_captacao_mensal(df, mes_ref):
 
     return result
 
-print(top10_captacao_mensal(df, "2025-08-01"))
+#print(top10_captacao_mensal(df, "2025-08"))
+
+##################################################
+# 3. Top 10 fundos por patrimônio líquido no mês #
+##################################################
+
+def top10_patrimonio_liquido(df, mes_ref):
+    # converte dt_comptc para datetime
+    df = df.copy()
+    df['dt_comptc'] = pd.to_datetime(df['dt_comptc'], errors='coerce')
+
+    # converte mes_ref para datetime
+    mes_ref = pd.to_datetime(mes_ref)
+
+    df["id_fundo"] = df.apply(
+        lambda x: x["id_subclasse"] if x["flag_subclasse"] == 1 else x["cnpj_fundo_classe"], axis=1
+    )
+
+    aux = df[df['dt_comptc'] == mes_ref]
+    result= (
+        aux.groupby('id_fundo', as_index=False)
+        .agg(patrimonio_liquido=('vl_total', 'max'))
+        .sort_values('patrimonio_liquido', ascending=False)
+        .head(10)
+    )
+
+    # formata como moeda BRL
+    result['patrimonio_liquido'] = result['patrimonio_liquido'].map(
+        lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    return result
+
+#print(top10_patrimonio_liquido(df, "2025-08-29")) #sempre o úlltimo dia útil do mês para ter o resultado do mês.
+
+#######################################################
+# 4. Top 10 fundos por número de cotistas em uma data #
+#######################################################
+def top10_num_cotistas(df, data_ref):
+    df = df.copy()
+    df['dt_comptc'] = pd.to_datetime(df['dt_comptc'], errors='coerce')
+    data_ref = pd.to_datetime(data_ref)
+
+    df['id_fundo'] = df.apply(lambda x: x['id_subclasse'] if x['flag_subclasse'] == 1 else x['cnpj_fundo_classe'], axis=1)
+
+    aux = df[df['dt_comptc'] == data_ref]
+    result = (
+        aux.groupby('id_fundo', as_index=False)
+        .agg(num_cotistas=('nr_cotst', 'max'))
+        .sort_values('num_cotistas', ascending=False)
+        .head(10)
+    )
+
+    return result
+
+print(top10_num_cotistas(df, '2025-09-01'))
+
+
+final = time.time()
+tempo_execucao = final-inicio
+tempo_minutoss = tempo_execucao/60
+print("Programa finalizado!")
+print(f"Tempo de execução: {tempo_execucao} segundos.")
+print(f"Tempo de execução: {tempo_minutoss} minutos.")
