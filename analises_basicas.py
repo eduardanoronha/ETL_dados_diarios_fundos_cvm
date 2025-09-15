@@ -113,7 +113,8 @@ def top10_patrimonio_liquido(df, mes_ref):
         .sort_values('patrimonio_liquido', ascending=False)
         .head(10)
     )
-
+    # adiciona a data de referência
+    result['data_ref'] = mes_ref
     # formata como moeda BRL
     result['patrimonio_liquido'] = result['patrimonio_liquido'].map(
         lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -121,7 +122,7 @@ def top10_patrimonio_liquido(df, mes_ref):
 
     return result
 
-#print(top10_patrimonio_liquido(df, "2025-08-29")) #sempre o úlltimo dia útil do mês para ter o resultado do mês.
+print(top10_patrimonio_liquido(df, "2025-08-29")) #sempre o úlltimo dia útil do mês para ter o resultado do mês.
 
 #######################################################
 # 4. Top 10 fundos por número de cotistas em uma data #
@@ -140,6 +141,8 @@ def top10_num_cotistas(df, data_ref):
         .sort_values('num_cotistas', ascending=False)
         .head(10)
     )
+    # adiciona a data de referência
+    result['data_ref'] = data_ref
 
     return result
 
