@@ -1,4 +1,4 @@
---Captação líquida acumulada por mês 
+--Captação líquida acumulada por mês por fundo
 WITH aux AS(
 SELECT 
 CASE
@@ -83,7 +83,7 @@ SELECT
     id_fundo,
     MAX(nr_cotst) AS num_cotistas
 FROM aux
-WHERE dt_comptc = '2025-08-29' -- No SQL Server eu poderia usar uma variável para que essa data seja sempre o último dia útil do mês anterior
+WHERE dt_comptc = '2025-09-01' -- No SQL Server eu poderia usar uma variável para que essa data seja sempre o último dia útil do mês anterior
 GROUP BY id_fundo
 ORDER BY num_cotistas DESC
 LIMIT 10
@@ -129,7 +129,3 @@ FROM aux
 WHERE id_fundo = '07.593.972/0001-86'
 ORDER BY dt_comptc
 ;
-
-select * from dados_abertos_cvm.informe_diario_fundos  
-where cnpj_fundo_classe = '11.233.045/0001-22'
-order by dt_comptc
