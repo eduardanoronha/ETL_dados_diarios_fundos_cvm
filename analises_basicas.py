@@ -161,7 +161,7 @@ def evolucao_patrimonio_liquido(df, id_fundo):
     aux = aux.sort_values('dt_comptc')
 
     # gráfico
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(12, 6))
     plt.plot(aux['dt_comptc'], aux['patrimonio_liquido'], marker='o')
     plt.title(f"Evolução Patrimônio Líquido: {id_fundo}")
     plt.xlabel("Data")
@@ -173,9 +173,38 @@ def evolucao_patrimonio_liquido(df, id_fundo):
 
     return aux
 
-print(evolucao_patrimonio_liquido(df,'07.593.972/0001-86'))
+evolucao_patrimonio_liquido(df,'07.593.972/0001-86')
 
+#########################################
+# 6. Retorno diário percentual do fundo #
+#########################################
 
+def retorno_diario(df, id_fundo):
+    df = df.copy()
+    df['dt_comptc'] = pd.to_datetime(df['dt_comptc'], errors='coerce')
+
+    df['id_fundo'] = df.apply(lambda x: x['id_subclasse'] if x['flag_subclasse'] == 1 else x['cnpj_fundo_classe'], axis=1)
+    aux = df[df['id_fundo'] == id_fundo][['id_fundo', 'dt_comptc', 'vl_quota']].sort_values('dt_comptc')
+
+    aux['vl_quota_anterior'] = aux['vl_quota'].shift(1)
+    aux['retorno_diario_pct'] = ((aux['vl_quota'] / aux['vl_quota_anterior'] - 1) * 100).round(2)
+
+    # gráfico
+    plt.figure(figsize=(12, 6))
+    plt.plot(aux['dt_comptc'], aux['retorno_diario_pct'], marker='o', linestyle='-', color='blue', alpha=0.7)
+    plt.axhline(y=0, color='red', linestyle='--', linewidth=1)  # linha de referência zero
+    plt.title(f"Retorno Diário (%) do fundo: {id_fundo}")
+    plt.xlabel("Data")
+    plt.ylabel("Retorno Diário (%)")
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+    return aux
+
+retorno_diario(df, '07.593.972/0001-86')
 
 final = time.time()
 tempo_execucao = final-inicio
