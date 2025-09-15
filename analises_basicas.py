@@ -122,7 +122,7 @@ def top10_patrimonio_liquido(df, mes_ref):
 
     return result
 
-print(top10_patrimonio_liquido(df, "2025-08-29")) #sempre o úlltimo dia útil do mês para ter o resultado do mês.
+#print(top10_patrimonio_liquido(df, "2025-08-29")) #sempre o úlltimo dia útil do mês para ter o resultado do mês.
 
 #######################################################
 # 4. Top 10 fundos por número de cotistas em uma data #
@@ -146,7 +146,35 @@ def top10_num_cotistas(df, data_ref):
 
     return result
 
-print(top10_num_cotistas(df, '2025-09-01'))
+#print(top10_num_cotistas(df, '2025-09-01'))
+
+#################################################
+# 5. Evolução do Patrimônio Líquido de um fundo #
+#################################################
+
+def evolucao_patrimonio_liquido(df, id_fundo):
+    df = df.copy()
+    df['dt_comptc'] = pd.to_datetime(df['dt_comptc'], errors='coerce')
+
+    df['id_fundo'] = df.apply(lambda x: x['id_subclasse'] if x['flag_subclasse'] == 1 else x['cnpj_fundo_classe'], axis=1)
+    aux = df[df['id_fundo'] == id_fundo][['id_fundo', 'dt_comptc', 'vl_total']].rename(columns={'vl_total': 'patrimonio_liquido'})
+    aux = aux.sort_values('dt_comptc')
+
+    # gráfico
+    plt.figure(figsize=(10, 5))
+    plt.plot(aux['dt_comptc'], aux['patrimonio_liquido'], marker='o')
+    plt.title(f"Evolução Patrimônio Líquido: {id_fundo}")
+    plt.xlabel("Data")
+    plt.ylabel("Patrimônio Líquido")
+    plt.grid(True)
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+    plt.xticks(rotation=45)
+    plt.show()
+
+    return aux
+
+print(evolucao_patrimonio_liquido(df,'07.593.972/0001-86'))
+
 
 
 final = time.time()
