@@ -83,6 +83,7 @@ for index, row in df_fundo.iterrows():
     ID_SUBCLASSE = row["ID_SUBCLASSE"] if pd.notna(row["ID_SUBCLASSE"]) else None
     DT_COMPTC =  row["DT_COMPTC"]
     VL_TOTAL = pd.to_numeric(row["VL_TOTAL"], errors="coerce")
+    VL_TOTAL = VL_TOTAL if pd.notna(VL_TOTAL) else '0'
     VL_QUOTA = pd.to_numeric(row["VL_QUOTA"], errors="coerce")
     VL_PATRIM_LIQ = pd.to_numeric(row["VL_PATRIM_LIQ"], errors="coerce")
     CAPTC_DIA = pd.to_numeric(row["CAPTC_DIA"], errors="coerce")
